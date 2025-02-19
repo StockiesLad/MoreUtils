@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id "application"
+}
+
+apply plugin : "java"
+
+group = 'net.stockieslad.moreutils'
+version = project.version
+
+ext {
+    javaMainClass = "net.stockieslad.moreutils.Main"
+}
+
+application {
+    mainClassName = javaMainClass
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
