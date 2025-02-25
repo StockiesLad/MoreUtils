@@ -52,6 +52,13 @@ public interface AbstractHolder<T> extends Supplier<T>, AccessLock, Iterable<Abs
     <X> AbstractHolder<X> transform(Function<T, X> function);
 
     /**
+     * Appends an entire array into the current holder.
+     * @param newValues All the values to join
+     * @return The latest holder
+     */
+    AbstractHolder<T> fromArray(T[] newValues);
+
+    /**
      * Performs a basic check to see if the stored value is null;
      * returns false if null.
      * @return Whether the stored value is not null.
@@ -115,7 +122,7 @@ public interface AbstractHolder<T> extends Supplier<T>, AccessLock, Iterable<Abs
      * @return Whether the previous holder is not null.
      */
     default boolean hasPrevious() {
-        return prev() != null && prev() != this;
+        return prev() != this;
     }
 
     /**
@@ -124,6 +131,14 @@ public interface AbstractHolder<T> extends Supplier<T>, AccessLock, Iterable<Abs
      */
     default boolean isEmpty() {
         return !hasValue() && !hasPrevious();
+    }
+
+    /**
+     * Checks if the holder has either a reference to a previous holder.
+     * @return False, if empty.
+     */
+    default boolean isPresent() {
+        return hasValue() && hasPrevious();
     }
 
     /**
@@ -155,8 +170,7 @@ public interface AbstractHolder<T> extends Supplier<T>, AccessLock, Iterable<Abs
             private boolean first = false;
             @Override
             public boolean hasNext() {
-                var hasPrev = child.hasPrevious();
-                return hasPrev || !first;
+                return child.hasPrevious() || !first;
             }
 
             @Override

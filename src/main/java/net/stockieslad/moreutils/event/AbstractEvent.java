@@ -17,7 +17,7 @@ public interface AbstractEvent<T> {
     }
 
     default void add(EventArgs<T> args) {
-        add(0, args);
+        add(new EventListener<>(0, args));
     }
 
     void replace(EventListener<T> listener, EventArgs<T> args);

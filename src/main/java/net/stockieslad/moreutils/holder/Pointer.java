@@ -50,6 +50,12 @@ public class Pointer<T> extends StaticLock implements ConsumingHolder<T> {
     }
 
     @Override
+    public AbstractHolder<T> fromArray(T[] newValues) {
+        value = newValues[newValues.length - 1];
+        return this;
+    }
+
+    @Override
     public AbstractHolder<T> prev() {
         return this;
     }

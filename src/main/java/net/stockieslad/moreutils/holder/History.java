@@ -66,8 +66,24 @@ public final class History<T> implements AbstractHolder<T> {
     }
 
     @Override
+    public AbstractHolder<T> fromArray(T[] newValues) {
+        @SuppressWarnings("unchecked")
+        AbstractHolder<T>[] array = new AbstractHolder[newValues.length];
+        for (int i = 0; i < newValues.length; i++) {
+            array[i] = new Series<>(newValues[i],
+                    i == 0 ? this : array[i - 1]);
+        }
+        return array[array.length - 1];
+    }
+
+    @Override
     public AbstractHolder<T> prev() {
         return prev;
+    }
+
+    @Override
+    public AbstractHolder<T> setPrev(AbstractHolder<T> prev) {
+        return new History<>(prev.get(), this);
     }
 
     @Override
@@ -86,10 +102,5 @@ public final class History<T> implements AbstractHolder<T> {
     @Override
     public boolean isLocked() {
         return false;
-    }
-
-    @Override
-    public AbstractHolder<T> setPrev(AbstractHolder<T> prev) {
-        return new Series<>(prev.get(), this);
     }
 }

@@ -1,7 +1,5 @@
 package net.stockieslad.moreutils.lock;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @apiNote <STRONG>This is not thread-safe!</STRONG>
  * <P>
@@ -31,25 +29,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </pre>
  */
 public class StaticLock implements AccessLock {
-    private final AtomicBoolean notLocked = new AtomicBoolean(true);
+    protected boolean notLocked = true;
 
     @Override
     public void addLock() {
-        notLocked.set(false);
+        notLocked = false;
     }
 
     @Override
     public void removeLock() {
-        notLocked.set(true);
+        notLocked = true;
     }
 
     @Override
     public boolean isUnlocked() {
-        return notLocked.get();
+        return notLocked;
     }
 
     @Override
     public boolean isLocked() {
-        return !notLocked.get();
+        return !notLocked;
     }
 }

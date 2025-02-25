@@ -5,38 +5,48 @@ import net.stockieslad.moreutils.holder.Pointer;
 import net.stockieslad.moreutils.holder.Series;
 
 /**
- *
+ * TODO: Optimise {@link Event#add(EventListener)}.
+ * TODO: Add a body pointer and a size to optimise large additions
  * @param <T> The context for usage in {@link EventArgs#proceed(AbstractEvent, EventListener, T, Pointer)}
  */
-public class Event<T> implements AbstractEvent<T> {
-    private AbstractHolder<EventListener<T>> head = new Series<>();
+public class Event<T> implements AbstractLinkedEvent<T> {
+    private final AbstractHolder<EventListener<T>> tail = new Series<>();
+    private AbstractHolder<EventListener<T>> head = tail;
     private final Pointer<Boolean> status = new Pointer<>();
 
     @Override
     public void execute(T context) {
-        for (AbstractHolder<EventListener<T>> seriesRef = head; seriesRef.hasPrevious(); seriesRef = seriesRef.prev()) {
-            var listener = seriesRef.get();
+        AbstractHolder<EventListener<T>> next = null;
+        for (var series = head; series.hasPrevious(); series = series.prev()) {
+            var listener = series.get();
             listener.arg.proceed(this, listener, context, status);
             if (status.get() != null)
-               if (status.get()) remove(listener);
-            else break;
+                if (status.get()) displace(series, next);
+                else break;
+            next = series;
         }
     }
 
     @Override
     public void add(EventListener<T> listener) {
-        var priority = listener.priority;
-        for (AbstractHolder<EventListener<T>> seriesRef = head; true; seriesRef = seriesRef.prev()) {
-            if (seriesRef.hasPrevious()) {
-                if (seriesRef.get().priority - priority <= 0) {
-                    seriesRef.set(listener);
-                    break;
-                }
-            } else {
-                seriesRef.set(listener);
-                break;
-            }
+        var fail = true;
+        for (var series = head; series.hasPrevious(); series = series.prev()) {
+            if (series.get().priority - listener.priority > 0) continue;
+            series.set(listener);
+            fail = false;
+            break;
         }
+        if (fail) tail.set(listener);
+    }
+
+    @Override
+    public AbstractHolder<EventListener<T>> insert(
+            AbstractHolder<EventListener<T>> prev,
+            AbstractHolder<EventListener<T>> next
+    ) {
+        prev.setPrev(next.prev());
+        next.setPrev(prev);
+        return prev;
     }
 
     @Override
@@ -50,13 +60,24 @@ public class Event<T> implements AbstractEvent<T> {
             head = head.prev();
         else {
             var next = head;
-            for (AbstractHolder<EventListener<T>> seriesRef = head; seriesRef.hasPrevious(); seriesRef = seriesRef.prev()) {
-                if (seriesRef.get() == listener) {
-                    next.setPrev(seriesRef.prev());
+            for (var series = head; series.hasPrevious(); series = series.prev()) {
+                if (series.get() == listener) {
+                    next.setPrev(series.prev());
                     break;
-                } else next = seriesRef;
+                } else next = series;
             }
         }
+    }
+
+    @Override
+    public AbstractHolder<EventListener<T>> displace(
+            AbstractHolder<EventListener<T>> prev,
+            AbstractHolder<EventListener<T>> next
+    ) {
+        if (next == null)
+            head = head.prev();
+        else next.setPrev(prev.prev());
+        return prev;
     }
 
     @Override

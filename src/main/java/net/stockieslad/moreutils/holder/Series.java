@@ -68,11 +68,11 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     }
 
     @Override
+    //Why is this so fucking slow????
     public AbstractHolder<T> set(T newValue) {
-        if (isUnlocked()) {
-            var series = new Series<>(this.value, this.prev);
+        if (notLocked) {
+            this.prev = new Series<>(this.value, this.prev);
             this.value = newValue;
-            this.prev = series;
         }
         return this;
     }
@@ -83,6 +83,18 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     }
 
     @Override
+    public AbstractHolder<T> fromArray(T[] newValues) {
+        @SuppressWarnings("unchecked")
+        AbstractHolder<T>[] array = new AbstractHolder[newValues.length];
+        for (int i = 0; i < newValues.length; i++) {
+            array[i] = new Series<>(newValues[i],
+                    i == 0 ? this.prev : array[i - 1]);
+        }
+        this.prev = array[newValues.length - 1];
+        return this;
+    }
+
+    @Override
     public AbstractHolder<T> prev() {
         return prev != null ? prev : this;
     }
@@ -90,6 +102,6 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     @Override
     public AbstractHolder<T> setPrev(AbstractHolder<T> prev) {
         this.prev = prev;
-        return this;
+        return prev;
     }
 }
