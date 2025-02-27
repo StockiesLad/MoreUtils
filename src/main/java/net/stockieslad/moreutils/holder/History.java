@@ -1,5 +1,7 @@
 package net.stockieslad.moreutils.holder;
 
+import net.stockieslad.moreutils.holder.series.Series;
+
 import java.util.function.Function;
 
 /**

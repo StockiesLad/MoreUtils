@@ -3,7 +3,7 @@ package net.stockieslad.moreutils;
 import net.stockieslad.moreutils.event.AbstractEvent;
 import net.stockieslad.moreutils.event.AbstractLinkedEvent;
 import net.stockieslad.moreutils.event.Event;
-import net.stockieslad.moreutils.holder.Series;
+import net.stockieslad.moreutils.holder.series.Series;
 
 public class Main {
     public static void main(String[] args) {
@@ -56,8 +56,15 @@ public class Main {
 
         var time = System.currentTimeMillis();
 
-        for (int i = 0; i <= 1_000_000; i++)
-            event.add((event1, listener, ctx, status) -> {});
+        //Broken
+        Series.POOL.fill(1_000_000);
+        for (int i = 0; i <= 1_000_000; i++) {
+            var x = i;
+            event.add((event1, listener, ctx, status) -> {
+                if (x % 100_0000 == 0)
+                    System.out.println("hi" + x);
+            });
+        }
         System.out.println(System.currentTimeMillis() - time + "ms to add a million args");
 
         time = System.currentTimeMillis();

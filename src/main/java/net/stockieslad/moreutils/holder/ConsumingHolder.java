@@ -6,7 +6,7 @@ import java.util.function.Consumer;
  * Maps a consumer to work with a holder. This is used for
  * inter-compatibility with existing systems.
  * <P>
- *     All implementations must not be immutable as the next
+ *     All implementations must not be immutable as the previous
  *     instance will not be accessible solely using a consumer.
  * </P>
  * @param <T> Type of the stored value

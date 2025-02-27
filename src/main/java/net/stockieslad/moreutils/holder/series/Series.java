@@ -1,6 +1,9 @@
-package net.stockieslad.moreutils.holder;
+package net.stockieslad.moreutils.holder.series;
 
 import net.stockieslad.moreutils.event.Event;
+import net.stockieslad.moreutils.holder.AbstractHolder;
+import net.stockieslad.moreutils.holder.ConsumingHolder;
+import net.stockieslad.moreutils.holder.History;
 import net.stockieslad.moreutils.lock.StaticLock;
 
 import java.util.function.Function;
@@ -28,15 +31,17 @@ import java.util.function.Function;
  * </P>
  * @param <T>
  */
+@SuppressWarnings("unchecked")
 public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     private T value;
     private AbstractHolder<T> prev;
+    public static final SeriesPool<?> POOL = new SeriesPool<>(); // Pooling for efficiency
 
     /**
      * Any holder with a previous series must always have a
      * value to go with it. A constructor that just takes in a
      * previous series is not provided as doing that defeats the
-     * entire idea of {@link AbstractHolder}
+     * entire idea of {@link AbstractHolder}.
      * @param value Initial value
      * @param prev Initial previous series
      */
@@ -68,12 +73,17 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     }
 
     @Override
-    //Why is this so fucking slow????
     public AbstractHolder<T> set(T newValue) {
         if (notLocked) {
-            this.prev = new Series<>(this.value, this.prev);
+            this.prev = ((SeriesPool<T>)POOL).acquire(this.value, this.prev); // Reuse from pool
             this.value = newValue;
         }
+        return this;
+    }
+
+    Series<T> setAll(T value, AbstractHolder<T> prev) {
+        this.value = value;
+        this.prev = prev;
         return this;
     }
 

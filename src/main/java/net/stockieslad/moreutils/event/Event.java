@@ -2,7 +2,7 @@ package net.stockieslad.moreutils.event;
 
 import net.stockieslad.moreutils.holder.AbstractHolder;
 import net.stockieslad.moreutils.holder.Pointer;
-import net.stockieslad.moreutils.holder.Series;
+import net.stockieslad.moreutils.holder.series.Series;
 
 /**
  * TODO: Optimise {@link Event#add(EventListener)}.
