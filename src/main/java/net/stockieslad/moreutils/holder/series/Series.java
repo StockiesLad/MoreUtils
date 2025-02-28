@@ -6,6 +6,8 @@ import net.stockieslad.moreutils.holder.ConsumingHolder;
 import net.stockieslad.moreutils.holder.History;
 import net.stockieslad.moreutils.lock.StaticLock;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.function.Function;
 
 /**
@@ -33,9 +35,19 @@ import java.util.function.Function;
  */
 @SuppressWarnings("unchecked")
 public class Series<T> extends StaticLock implements ConsumingHolder<T> {
+    private static final VarHandle PREV_HANDLE;
+
+    static {
+        try {
+            PREV_HANDLE = MethodHandles.lookup()
+                    .findVarHandle(Series.class, "prev", AbstractHolder.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private T value;
     private AbstractHolder<T> prev;
-    public static final SeriesPool<?> POOL = new SeriesPool<>(); // Pooling for efficiency
 
     /**
      * Any holder with a previous series must always have a
@@ -75,7 +87,7 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     @Override
     public AbstractHolder<T> set(T newValue) {
         if (notLocked) {
-            this.prev = ((SeriesPool<T>)POOL).acquire(this.value, this.prev); // Reuse from pool
+            this.prev = SeriesBuffer.get(this.value, this.prev); // Reuse from pool
             this.value = newValue;
         }
         return this;
@@ -106,6 +118,7 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
 
     @Override
     public AbstractHolder<T> prev() {
+        PREV_HANDLE.getAcquire(this);
         return prev != null ? prev : this;
     }
 

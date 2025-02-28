@@ -56,11 +56,9 @@ public class Main {
 
         var time = System.currentTimeMillis();
 
-        //Broken
-        Series.POOL.fill(1_000_000);
         for (int i = 0; i <= 1_000_000; i++) {
             var x = i;
-            event.add((event1, listener, ctx, status) -> {
+            event.add(x, (event1, listener, ctx, status) -> {
                 if (x % 100_0000 == 0)
                     System.out.println("hi" + x);
             });

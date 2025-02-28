@@ -5,8 +5,7 @@ import net.stockieslad.moreutils.holder.Pointer;
 import net.stockieslad.moreutils.holder.series.Series;
 
 /**
- * TODO: Optimise {@link Event#add(EventListener)}.
- * TODO: Add a body pointer and a size to optimise large additions
+ * TODO: Optimise the storage by using a circle.
  * @param <T> The context for usage in {@link EventArgs#proceed(AbstractEvent, EventListener, T, Pointer)}
  */
 public class Event<T> implements AbstractLinkedEvent<T> {
@@ -29,14 +28,15 @@ public class Event<T> implements AbstractLinkedEvent<T> {
 
     @Override
     public void add(EventListener<T> listener) {
-        var fail = true;
-        for (var series = head; series.hasPrevious(); series = series.prev()) {
-            if (series.get().priority - listener.priority > 0) continue;
-            series.set(listener);
-            fail = false;
+        for (var series = head; true; series = series.prev()) {
+            if (series.hasPrevious()) {
+                if (series.get().priority - listener.priority > 0) continue;
+                series.set(listener);
+            } else {
+                tail.set(listener);
+            }
             break;
         }
-        if (fail) tail.set(listener);
     }
 
     @Override
