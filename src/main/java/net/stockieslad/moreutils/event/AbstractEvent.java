@@ -7,13 +7,14 @@ import net.stockieslad.moreutils.holder.Pointer;
  * {@link EventArgs} according to {@link Comparable}.
  * @param <T> The context for usage in {@link EventArgs#proceed(AbstractEvent, EventListener, T, Pointer)}
  */
+@SuppressWarnings("unchecked")
 public interface AbstractEvent<T> {
     void execute(T context);
 
     void add(EventListener<T> listener);
 
     default void add(int priority, EventArgs<T> args) {
-        add(new EventListener<>(priority, args));
+        add(((EventListener<T>) EventListener.BUFFER.get()).setAll(priority, args));
     }
 
     default void add(EventArgs<T> args) {
@@ -25,7 +26,7 @@ public interface AbstractEvent<T> {
     void remove(EventListener<T> listener);
 
     default void remove(int priority, EventArgs<T> args) {
-        remove(new EventListener<>(priority, args));
+        remove(((EventListener<T>) EventListener.BUFFER.get()).setAll(priority, args));
     }
 
     boolean isEmpty();

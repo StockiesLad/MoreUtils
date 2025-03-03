@@ -1,42 +1,28 @@
 package net.stockieslad.moreutils;
 
 import net.stockieslad.moreutils.event.AbstractEvent;
-import net.stockieslad.moreutils.event.AbstractLinkedEvent;
 import net.stockieslad.moreutils.event.Event;
-import net.stockieslad.moreutils.holder.series.Series;
+import net.stockieslad.moreutils.event.EventListener;
+import net.stockieslad.moreutils.holder.Series;
 
 public class Main {
     public static void main(String[] args) {
-        var series = new Series<>(); // Initializes buffer.
+
+
         testMillionRuns();
         testMillionArgs();
         //testMillionHolders();
-        testThreadSafety();
+        //testThreadSafety();
         //testEventAdding();
+
+        while (true) {
+            EventListener.BUFFER.get();
+            Series.BUFFER.get();
+        }
     }
 
-    public static <T> AbstractLinkedEvent<T> createEvent() {
+    public static <T> AbstractEvent<T> createEvent() {
         return new Event<>();
-    }
-
-    public static void testMillionHolders() {
-        Series<Integer> series = new Series<>();
-
-        var time = System.currentTimeMillis();
-        for (int i = 0; i < 1_000_000; i++) {
-            series.set(i);
-        }
-        System.out.println(System.currentTimeMillis() - time + "ms append million series");
-
-        series = new Series<>();
-        Integer[] array = new Integer[1_000_000];
-        for (int i = 0; i < 1_000_000; i++) {
-            array[i] = i;
-        }
-        time = System.currentTimeMillis();
-        series.fromArray(array);
-        System.out.println(System.currentTimeMillis() - time + "ms append million series at once");
-
     }
 
     public static void testMillionRuns() {
@@ -93,7 +79,7 @@ public class Main {
     public static void testEventAdding() {
         for (int i = 0; i < 100; i++) {
             AbstractEvent<Boolean> event = createEvent();
-            for (int i1 = 0; i1 < 10_000_000; i1++) {
+            for (int i1 = 0; i1 < 1_000_000; i1++) {
                 event.add((event1, listener, ctx, status) -> {});
             }
             event.execute(true);

@@ -1,7 +1,6 @@
 package net.stockieslad.moreutils.holder;
 
 import net.stockieslad.moreutils.event.AbstractEvent;
-import net.stockieslad.moreutils.holder.series.Series;
 import net.stockieslad.moreutils.lock.AccessLock;
 
 import java.util.Iterator;

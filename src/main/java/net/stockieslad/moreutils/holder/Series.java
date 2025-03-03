@@ -1,9 +1,7 @@
-package net.stockieslad.moreutils.holder.series;
+package net.stockieslad.moreutils.holder;
 
+import net.stockieslad.moreutils.data.Buffer;
 import net.stockieslad.moreutils.event.Event;
-import net.stockieslad.moreutils.holder.AbstractHolder;
-import net.stockieslad.moreutils.holder.ConsumingHolder;
-import net.stockieslad.moreutils.holder.History;
 import net.stockieslad.moreutils.lock.StaticLock;
 
 import java.lang.invoke.MethodHandles;
@@ -35,10 +33,10 @@ import java.util.function.Function;
  */
 @SuppressWarnings("unchecked")
 public class Series<T> extends StaticLock implements ConsumingHolder<T> {
+    public static final Buffer<Series<?>> BUFFER = new Buffer<>(Series::new);
     private static final VarHandle PREV_HANDLE;
 
     static {
-        SeriesBuffer.init();
         try {
             PREV_HANDLE = MethodHandles.lookup()
                     .findVarHandle(Series.class, "prev", AbstractHolder.class);
@@ -80,7 +78,7 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
         this(null, null);
     }
 
-    Series<T> setAll(T value, AbstractHolder<T> prev) {
+    private Series<T> setAll(T value, AbstractHolder<T> prev) {
         this.value = value;
         this.prev = prev;
         return this;
@@ -94,7 +92,7 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     @Override
     public AbstractHolder<T> set(T newValue) {
         if (notLocked) {
-            this.prev = SeriesBuffer.get(this.value, this.prev); // Reuse from pool
+            this.prev = ((Series<T>)BUFFER.get()).setAll(this.value, this.prev);
             this.value = newValue;
         }
         return this;
