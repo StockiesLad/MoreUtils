@@ -5,7 +5,7 @@ import net.stockieslad.moreutils.holder.Pointer;
 import net.stockieslad.moreutils.holder.series.Series;
 
 /**
- * TODO: Optimise the storage by using a circle.
+ * TODO: Optimise the storage by linking in a circle and utilizing stan-dev & medians.
  * @param <T> The context for usage in {@link EventArgs#proceed(AbstractEvent, EventListener, T, Pointer)}
  */
 public class Event<T> implements AbstractLinkedEvent<T> {

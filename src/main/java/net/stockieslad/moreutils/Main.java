@@ -7,9 +7,10 @@ import net.stockieslad.moreutils.holder.series.Series;
 
 public class Main {
     public static void main(String[] args) {
+        var series = new Series<>(); // Initializes buffer.
         testMillionRuns();
-        testMillionArgs(); // Why the fuck is this so slow
-        testMillionHolders();
+        testMillionArgs();
+        //testMillionHolders();
         testThreadSafety();
         //testEventAdding();
     }
@@ -56,13 +57,8 @@ public class Main {
 
         var time = System.currentTimeMillis();
 
-        for (int i = 0; i <= 1_000_000; i++) {
-            var x = i;
-            event.add(x, (event1, listener, ctx, status) -> {
-                if (x % 100_0000 == 0)
-                    System.out.println("hi" + x);
-            });
-        }
+        for (int i = 0; i <= 1_000_000; i++)
+            event.add((event1, listener, ctx, status) -> {});
         System.out.println(System.currentTimeMillis() - time + "ms to add a million args");
 
         time = System.currentTimeMillis();

@@ -38,6 +38,7 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
     private static final VarHandle PREV_HANDLE;
 
     static {
+        SeriesBuffer.init();
         try {
             PREV_HANDLE = MethodHandles.lookup()
                     .findVarHandle(Series.class, "prev", AbstractHolder.class);
@@ -79,6 +80,12 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
         this(null, null);
     }
 
+    Series<T> setAll(T value, AbstractHolder<T> prev) {
+        this.value = value;
+        this.prev = prev;
+        return this;
+    }
+
     @Override
     public T get() {
         return this.value;
@@ -90,12 +97,6 @@ public class Series<T> extends StaticLock implements ConsumingHolder<T> {
             this.prev = SeriesBuffer.get(this.value, this.prev); // Reuse from pool
             this.value = newValue;
         }
-        return this;
-    }
-
-    Series<T> setAll(T value, AbstractHolder<T> prev) {
-        this.value = value;
-        this.prev = prev;
         return this;
     }
 
