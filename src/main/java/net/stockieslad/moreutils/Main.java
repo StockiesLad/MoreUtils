@@ -4,7 +4,11 @@ import net.stockieslad.moreutils.event.AbstractEvent;
 import net.stockieslad.moreutils.event.Event;
 
 public class Main {
+    private static final boolean IS_TESTING = false;
+
     public static void main(String[] args) {
+        if (!IS_TESTING) return;
+
         testMillionRuns();
         testMillionArgs();
         //testMillionHolders();
