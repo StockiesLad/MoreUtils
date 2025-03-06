@@ -2,13 +2,9 @@ package net.stockieslad.moreutils;
 
 import net.stockieslad.moreutils.event.AbstractEvent;
 import net.stockieslad.moreutils.event.Event;
-import net.stockieslad.moreutils.event.EventListener;
-import net.stockieslad.moreutils.holder.Series;
 
 public class Main {
     public static void main(String[] args) {
-
-
         testMillionRuns();
         testMillionArgs();
         //testMillionHolders();
@@ -16,8 +12,6 @@ public class Main {
         //testEventAdding();
 
         while (true) {
-            EventListener.BUFFER.get();
-            Series.BUFFER.get();
         }
     }
 
@@ -53,7 +47,7 @@ public class Main {
     }
     public static void testThreadSafety() {
         AbstractEvent<Integer> event = createEvent();
-        for (int i = 0; i < 1; i++) {
+        for (short i = 0; i < 1; i++) {
             var x = i;
             event.add(x, (event1, listener, ctx, status) -> {
                 System.out.println(x + " has been executed from thread " + ctx);

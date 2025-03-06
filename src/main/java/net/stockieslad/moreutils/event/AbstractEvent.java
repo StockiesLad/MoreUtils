@@ -21,8 +21,6 @@ public interface AbstractEvent<T> {
         add(new EventListener<>(0, args));
     }
 
-    void replace(EventListener<T> listener, EventArgs<T> args);
-
     void remove(EventListener<T> listener);
 
     default void remove(int priority, EventArgs<T> args) {

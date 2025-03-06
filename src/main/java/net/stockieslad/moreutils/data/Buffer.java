@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
 public class Buffer<T> {
-    private static final int SIZE = (int) (1024 * Math.pow(2, 4));
+    private static final int SIZE = 65536;
     private final T[] pool;
     private final Supplier<T> supplier;
     private int place;

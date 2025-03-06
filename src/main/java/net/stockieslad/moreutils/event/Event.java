@@ -43,18 +43,13 @@ public class Event<T> implements AbstractEvent<T> {
     }
 
     @Override
-    public void replace(EventListener<T> listener, EventArgs<T> args) {
-        listener.arg = args;
-    }
-
-    @Override
     public void remove(EventListener<T> listener) {
-        if (head.get() == listener)
+        if (head.get().equals(listener))
             head = head.prev();
         else {
             var next = head;
             for (var series = head; series.hasPrevious(); series = series.prev()) {
-                if (series.get() == listener) {
+                if (series.get().equals(listener)) {
                     next.setPrev(series.prev());
                     break;
                 } else next = series;
